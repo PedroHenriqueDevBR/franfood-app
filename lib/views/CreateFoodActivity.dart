@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -8,13 +9,16 @@ class CreateFoodActivity extends StatefulWidget {
 }
 
 class _CreateFoodActivityState extends State<CreateFoodActivity> {
-  
-  File _image;
-  TextEditingController _txtName            = TextEditingController();
-  TextEditingController _txtDescription     = TextEditingController();
-  TextEditingController _txtEnable          = TextEditingController();
-  TextEditingController _txtPrice           = TextEditingController();
-  TextEditingController _txtType            = TextEditingController();
+
+  GlobalKey<ScaffoldState>  _globalKey          = GlobalKey<ScaffoldState>();
+  File                      _image              = null;
+  String                    _imageUrl           = null;
+
+  TextEditingController     _txtName            = TextEditingController();
+  TextEditingController     _txtDescription     = TextEditingController();
+  TextEditingController     _txtEnable          = TextEditingController();
+  TextEditingController     _txtPrice           = TextEditingController();
+  TextEditingController     _txtType            = TextEditingController();
   
   Future _getImage() async {
     File image = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -22,16 +26,57 @@ class _CreateFoodActivityState extends State<CreateFoodActivity> {
       _image = image;
     });
   }
+
+  Future _getUriImage(StorageTaskSnapshot snapshot) async {
+    String url = await snapshot.ref.getDownloadURL();
+    print('Url: ' + url);
+
+    setState(() {
+      _imageUrl = url;
+    });
+  }
+
+  Future saveForm() async {
+
+    if (_image != null) {
+      FirebaseStorage storage = FirebaseStorage.instance;
+      StorageReference rootFolder = storage.ref();
+      StorageReference file = rootFolder.child('food').child('food.jpg');
+
+      StorageUploadTask task = file.putFile(_image);
+
+      task.events.listen((StorageTaskEvent storageEvent) {
+        if (storageEvent.type == StorageTaskEventType.progress) {
+          _globalKey.currentState.showSnackBar(SnackBar(content: Text('Processando')));
+        } else if (storageEvent.type == StorageTaskEventType.success) {
+          _globalKey.currentState.showSnackBar(SnackBar(content: Text('Salvo com sucesso')));
+        }
+      });
+
+      task.onComplete.then((StorageTaskSnapshot snapshot) {
+        _getUriImage(snapshot);
+      });
+
+    } else {
+      _globalKey.currentState.showSnackBar(
+          SnackBar(
+              content: Text('Nenhuma imagem selecionada!')
+          ),
+      );
+    }
+
+  }
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _globalKey,
       appBar: AppBar(
         title: Text('Lanches'),
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.save_alt),
-              onPressed: (){},
+              onPressed: saveForm,
           )
         ],
       ),
@@ -51,6 +96,9 @@ class _CreateFoodActivityState extends State<CreateFoodActivity> {
             SizedBox(height: 20,),
             Container(
               child: _image == null ? Text('Nada selecionado') : Image.file(_image),
+            ),
+            Container(
+              child: _imageUrl == null ? Text('Nada carregado') : Image.network(_imageUrl),
             ),
           ],
         ),
