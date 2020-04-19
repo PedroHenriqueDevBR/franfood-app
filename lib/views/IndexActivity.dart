@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:share/share.dart';
 import '../views/FoodFragment.dart';
+import './CreateFoodActivity.dart';
 
 class IndexActivity extends StatefulWidget {
   @override
@@ -36,6 +37,16 @@ class _IndexActivityState extends State<IndexActivity> {
       leading: Icon(Icons.fastfood),
       backgroundColor: Colors.red[900],
       actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.photo),
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CreateFoodActivity(),
+              ),
+            );
+          },
+        ),
         IconButton(
           icon: Icon(Icons.share),
           onPressed: () {

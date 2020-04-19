@@ -6,7 +6,9 @@ void main() {
   runApp(MaterialApp(
     title: 'FranFood',
     debugShowCheckedModeBanner: false,
-    theme: ThemeData.dark(),
+    theme: ThemeData(
+      primarySwatch: Colors.red,
+    ),
     home: IndexActivity(),
   ));
 
