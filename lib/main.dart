@@ -9,6 +9,7 @@ void main() {
     theme: ThemeData(
       primarySwatch: Colors.red,
     ),
+    darkTheme: ThemeData.dark(),
     home: IndexActivity(),
   ));
 

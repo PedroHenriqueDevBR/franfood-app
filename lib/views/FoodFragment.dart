@@ -6,6 +6,7 @@ class FoodFragment extends StatefulWidget {
 }
 
 class _FoodFragmentState extends State<FoodFragment> {
+  /*
   List<CardFood> items = [
     CardFood(
       'Bomba',
@@ -26,6 +27,15 @@ class _FoodFragmentState extends State<FoodFragment> {
       'Bomba',
       'Bomba de presunto e queijo',
       'https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+    ),
+  ];
+  [
+   */
+  List<CardFood> items = [
+    CardFood(
+      'Bomba',
+      'Bomba de presunto e queijo',
+      'https://images.pexels.com/photos/1633578/pexels-photo-1633578.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
     ),
   ];
 
