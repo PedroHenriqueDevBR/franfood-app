@@ -2,12 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class FoodFragment extends StatefulWidget {
+class DrinkFragment extends StatefulWidget {
+  List<CardFood> data;
+
+  DrinkFragment({this.data});
+
   @override
-  _FoodFragmentState createState() => _FoodFragmentState();
+  _DrinkFragmentState createState() => _DrinkFragmentState();
 }
 
-class _FoodFragmentState extends State<FoodFragment> with WidgetsBindingObserver {
+class _DrinkFragmentState extends State<DrinkFragment> with WidgetsBindingObserver {
   List<CardFood> items = [];
 
   getFirebaseData() async {
@@ -15,7 +19,7 @@ class _FoodFragmentState extends State<FoodFragment> with WidgetsBindingObserver
     QuerySnapshot querySnapshot = await Firestore.instance.collection('products').getDocuments();
     for (DocumentSnapshot snapshot in querySnapshot.documents) {
       var data = snapshot.data;
-      if (data['type'] == 'food') {
+      if (data['type'] == 'drink') {
         list.add(CardFood(data['name'], data['description'], data['image']));
       }
     }

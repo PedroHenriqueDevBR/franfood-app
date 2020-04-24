@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:share/share.dart';
-import '../views/FoodFragment.dart';
+import './FoodFragment.dart';
+import './DrinkFragment.dart';
+import './ComboFragment.dart';
 import './CreateFoodActivity.dart';
 
 class IndexActivity extends StatefulWidget {
@@ -11,15 +13,24 @@ class IndexActivity extends StatefulWidget {
 
 class _IndexActivityState extends State<IndexActivity> {
   final GlobalKey<ScaffoldState> _globalKey = GlobalKey<ScaffoldState>();
-
   String url = 'https://franfood.herokuapp.com/';
+
   int _currentIndex = 0;
-  List<Widget> _children = [FoodFragment(), FoodFragment(), FoodFragment()];
+  List<Widget> _children = [
+    FoodFragment(),
+    DrinkFragment(),
+    ComboFragment()
+  ];
 
   void _changeIndex(index) {
     setState(() {
       _currentIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -41,8 +52,9 @@ class _IndexActivityState extends State<IndexActivity> {
           icon: Icon(Icons.photo),
           onPressed: () {
             Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CreateFoodActivity(),
+              context,
+              MaterialPageRoute(
+                builder: (context) => CreateFoodActivity(),
               ),
             );
           },
