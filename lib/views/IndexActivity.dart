@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:share/share.dart';
 import './FoodFragment.dart';
 import './DrinkFragment.dart';
 import './ComboFragment.dart';
-import './CreateFoodActivity.dart';
 
 class IndexActivity extends StatefulWidget {
   @override
@@ -49,17 +47,6 @@ class _IndexActivityState extends State<IndexActivity> {
       backgroundColor: Colors.red[900],
       actions: <Widget>[
         IconButton(
-          icon: Icon(Icons.photo),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CreateFoodActivity(),
-              ),
-            );
-          },
-        ),
-        IconButton(
           icon: Icon(Icons.share),
           onPressed: () {
             final RenderBox box = context.findRenderObject();
@@ -97,22 +84,4 @@ class _IndexActivityState extends State<IndexActivity> {
     );
   }
 
-  // Página de apresentação funcional
-  WebviewScaffold homeWebView() {
-    return WebviewScaffold(
-        key: _globalKey,
-        debuggingEnabled: false,
-        withJavascript: true,
-        scrollBar: false,
-        appCacheEnabled: true,
-        withOverviewMode: true,
-        ignoreSSLErrors: true,
-        withLocalStorage: true,
-        useWideViewPort: true,
-        url: url,
-        initialChild: Center(
-          child: CircularProgressIndicator(),
-        ),
-        appBar: appBar());
-  }
 }
