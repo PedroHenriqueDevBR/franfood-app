@@ -1,13 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:franfood/views/ShowFoodActivity.dart';
 
 class FoodFragment extends StatefulWidget {
   @override
   _FoodFragmentState createState() => _FoodFragmentState();
 }
 
-class _FoodFragmentState extends State<FoodFragment> with WidgetsBindingObserver {
+class _FoodFragmentState extends State<FoodFragment> {
   List<CardFood> items = [];
 
   getFirebaseData() async {
@@ -16,28 +17,27 @@ class _FoodFragmentState extends State<FoodFragment> with WidgetsBindingObserver
     for (DocumentSnapshot snapshot in querySnapshot.documents) {
       var data = snapshot.data;
       if (data['type'] == 'food') {
-        list.add(CardFood(data['name'], data['description'], data['image']));
+        list.add(CardFood(data['name'], data['description'], data['image'], extra: data));
       }
     }
-
     setState(() {
       items = list;
     });
   }
 
-  @override
-  void initState() {
-    getFirebaseData();
-    WidgetsBinding.instance.removeObserver(this);
-    super.initState();
+  void showFood(data) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ShowFoodActivity(data),
+        ),
+    );
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      getFirebaseData();
-    }
-    super.didChangeAppLifecycleState(state);
+  void initState() {
+    getFirebaseData();
+    super.initState();
   }
 
   @override
@@ -47,10 +47,15 @@ class _FoodFragmentState extends State<FoodFragment> with WidgetsBindingObserver
       separatorBuilder: (context, index) => Divider(
         color: Colors.transparent,
       ),
-      itemBuilder: (context, index) => _cardFood(
-        items[index].title,
-        items[index].subtitle,
-        items[index].image,
+      itemBuilder: (context, index) => GestureDetector(
+        onTap: () {
+          showFood(items[index].extra);
+        },
+        child: _cardFood(
+          items[index].title,
+          items[index].subtitle,
+          items[index].image,
+        ),
       ),
     );
   }
@@ -58,44 +63,44 @@ class _FoodFragmentState extends State<FoodFragment> with WidgetsBindingObserver
   // Widgets
   Widget _cardFood(String title, String subtitle, String image) {
     return Container(
-      height: 250.0,
-      width: MediaQuery.of(context).size.width,
-      margin: EdgeInsets.all(10),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 30.0,
-              fontWeight: FontWeight.w700,
-              shadows: [
-                Shadow(
-                  color: Colors.black,
-                  blurRadius: 15,
-                ),
-              ],
+        height: 250.0,
+        width: MediaQuery.of(context).size.width,
+        margin: EdgeInsets.all(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 30.0,
+                fontWeight: FontWeight.w700,
+                shadows: [
+                  Shadow(
+                    color: Colors.black,
+                    blurRadius: 15,
+                  ),
+                ],
+              ),
             ),
-          ),
-          Text(
-            subtitle,
-            style: TextStyle(
-              fontSize: 20.0,
-              shadows: [
-                Shadow(color: Colors.black, blurRadius: 15),
-              ],
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 20.0,
+                shadows: [
+                  Shadow(color: Colors.black, blurRadius: 15),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16.0),
-        image: DecorationImage(
-          fit: BoxFit.cover,
-          image: NetworkImage(image),
+          ],
         ),
-      ),
-    );
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16.0),
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            image: NetworkImage(image),
+          ),
+        ),
+      );
   }
 }
 
@@ -103,6 +108,7 @@ class CardFood {
   String title;
   String subtitle;
   String image;
+  dynamic extra;
 
-  CardFood(this.title, this.subtitle, this.image);
+  CardFood(this.title, this.subtitle, this.image, {this.extra});
 }

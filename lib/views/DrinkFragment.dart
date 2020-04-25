@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:franfood/views/ShowFoodActivity.dart';
 
 class DrinkFragment extends StatefulWidget {
   List<CardFood> data;
@@ -11,7 +12,7 @@ class DrinkFragment extends StatefulWidget {
   _DrinkFragmentState createState() => _DrinkFragmentState();
 }
 
-class _DrinkFragmentState extends State<DrinkFragment> with WidgetsBindingObserver {
+class _DrinkFragmentState extends State<DrinkFragment> {
   List<CardFood> items = [];
 
   getFirebaseData() async {
@@ -20,28 +21,27 @@ class _DrinkFragmentState extends State<DrinkFragment> with WidgetsBindingObserv
     for (DocumentSnapshot snapshot in querySnapshot.documents) {
       var data = snapshot.data;
       if (data['type'] == 'drink') {
-        list.add(CardFood(data['name'], data['description'], data['image']));
+        list.add(CardFood(data['name'], data['description'], data['image'], extra: data));
       }
     }
-
     setState(() {
       items = list;
     });
   }
 
-  @override
-  void initState() {
-    getFirebaseData();
-    WidgetsBinding.instance.removeObserver(this);
-    super.initState();
+  void showFood(data) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ShowFoodActivity(data),
+      ),
+    );
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      getFirebaseData();
-    }
-    super.didChangeAppLifecycleState(state);
+  void initState() {
+    getFirebaseData();
+    super.initState();
   }
 
   @override
@@ -51,10 +51,15 @@ class _DrinkFragmentState extends State<DrinkFragment> with WidgetsBindingObserv
       separatorBuilder: (context, index) => Divider(
         color: Colors.transparent,
       ),
-      itemBuilder: (context, index) => _cardFood(
-        items[index].title,
-        items[index].subtitle,
-        items[index].image,
+      itemBuilder: (context, index) => GestureDetector(
+        onTap: () {
+          showFood(items[index].extra);
+        },
+        child: _cardFood(
+          items[index].title,
+          items[index].subtitle,
+          items[index].image,
+        ),
       ),
     );
   }
@@ -107,6 +112,7 @@ class CardFood {
   String title;
   String subtitle;
   String image;
+  dynamic extra;
 
-  CardFood(this.title, this.subtitle, this.image);
+  CardFood(this.title, this.subtitle, this.image, {this.extra});
 }
